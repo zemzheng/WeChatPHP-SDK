@@ -1,4 +1,11 @@
 <?PHP
+/**
+ * @author zemzheng@gmail.com
+ * @description
+ * @see https://github.com/zemzheng/WeChatPHP-SDK
+ * @see http://admin.wechat.com/wiki
+ * @see http://mp.weixin.qq.com/wiki
+ */
 class WeChatServer{
     private $_token;
     /**

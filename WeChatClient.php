@@ -1,17 +1,30 @@
 <?PHP
+/**
+ * @author zemzheng@gmail.clom
+ * @description 
+ * @see https://github.com/zemzheng/WeChatPHP-SDK
+ * @see http://admin.wechat.com/wiki
+ * @see http://mp.weixin.qq.com/wiki
+ */
 class WeChatClient{
-    private $_appid;
-    private $_appsecret;
+    // SETTING
     private static $_URL_API_ROOT = 'https://api.wechat.com';
     private static $_URL_FILE_API_ROOT = 'http://file.api.weixin.qq.com';
-
-    private static $_accessTokenCache = array();
-
     public static $ERRCODE_MAP = array(
         ## http://admin.wechat.com/wiki/index.php?title=Return_Codes
       '-1' => 'System busy', '0' => 'Request succeeded', '40001' => 'Verification failed', '40002' => 'Invalid certificate type', '40003' => 'Invalid Open ID', '40004' => 'Invalid media file type', '40005' => 'Invalid file type', '40006' => 'Invalid file size', '40007' => 'Invalid media file ID', '40008' => 'Invalid message type', '40009' => 'Invalid image file size', '40010' => 'Invalid audio file size', '40011' => 'Invalid video file size', '40012' => 'Invalid thumbnail file size', '40013' => 'Invalid App ID', '40014' => 'Invalid access token', '40015' => 'Invalid menu type', '40016' => 'Invalid button quantity', '40017' => 'Invalid button quantity', '40018' => 'Invalid button name length', '40019' => 'Invalid button KEY length', '40020' => 'Invalid button URL length', '40021' => 'Invalid menu version', '40022' => 'Invalid sub-menu levels', '40023' => 'Invalid sub-menu button quantity', '40024' => 'Invalid sub-menu button type',    '40025' => 'Invalid sub-menu button name length',    '40026' => 'Invalid sub-menu button KEY length',    '40027' => 'Invalid sub-menu button URL length',    '40028' => 'Invalid custom menu user',    '40029' => 'Invalid oauth code',    '40030' => 'Invalid refresh token',    '40031' => 'Invalid openid list',    '40032' => 'Invalid openid list length',    '40033' => 'Invalid request characters: The character "\uxxxx" cannot be included.',    '40035' => 'Invalid parameters',    '40038' => 'Invalid request format',    '40039' => 'Invalid URL length',    '40050' => 'Invalid group ID',    '40051' => 'Invalid group name',    '41001' => 'Parameter missing: access token',    '41002' => 'Parameter missing: appid',    '41003' => 'Parameter missing: refresh token',    '41004' => 'Parameter missing: secret',    '41005' => 'Multimedia file data missing',    '41006' => 'Parameter missing: media id',    '41007' => 'Sub-menu data missing',    '41008' => 'Parameter missing: oauth code',    '41009' => 'Parameter missing: openid',    '42001' => 'access token timed out',    '42002' => 'refresh token timed out',    '42003' => 'oauth code timed out',    '43001' => 'GET request required',    '43002' => 'POST request required',    '43003' => 'HTTPS request required',    '43004' => 'The other user is not yet a follower',    '43005' => 'The other user is not yet a follower',    '44001' => 'Multimedia file is empty',    '44002' => 'POST package is empty',    '44003' => 'Rich media message is empty',    '44004' => 'Text message is empty',    '45001' => 'Error source: multimedia file size',    '45002' => 'Message contents too long',    '45003' => 'Title too long',    '45004' => 'Description too long',    '45005' => 'URL too long',    '45006' => 'Image URL too long',    '45007' => 'Audio play time over limit',    '45008' => 'Rich media messages over limit',    '45009' => 'Error source: interface call',    '45010' => 'Message quantity over limit',    '45015' => 'Response too late',    '45016' => 'System group cannot be changed.',   
       '45017' => 'System name too long',    '45018' => 'Too many groups',    '46001' => 'Media data missing',    '46002' => 'This menu version doesn\'t exist.',    '46003' => 'This menu data doesn\'t exist.',    '46004' => 'This user doesn\'t exist.',    '47001' => 'Error while extracting JSON/XML contents',    '48001' => 'Unauthorized API function',    '50001' => 'The user is not authorized for this API'
     );
+
+    // DATA
+    private $_appid;
+    private $_appsecret;
+    private static $_accessTokenCache = array();    
+
+    public function __construct( $appid, $appsecret ){
+        $this->_appid     = $appid;
+        $this->_appsecret = $appsecret;
+    }
 
     public static function checkIsSuc( $res ){
         $result = 1;
@@ -22,11 +35,6 @@ class WeChatClient{
             $result = 0;
         }
         return $result; 
-    }
-
-    public function __construct( $appid, $appsecret ){
-        $this->_appid     = $appid;
-        $this->_appsecret = $appsecret;
     }
 
     /**
@@ -346,7 +354,7 @@ class WeChatClient{
     // ************************** qr code *****************
     public function getQrcodeImgByTicket( $ticket ){
         $ticket = urlencode( $ticket );
-        return self::get( "https://admin.wechat.com/cgi-bin/showqrcode?ticket=$ticket" );
+        return self::get( self::$_URL_API_ROOT . "/cgi-bin/showqrcode?ticket=$ticket" );
     }
     private function getQrcodeTicket(){
     }
