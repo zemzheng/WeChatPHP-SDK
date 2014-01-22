@@ -10,6 +10,7 @@ class WeChatClient{
     // SETTING
     private static $_URL_API_ROOT = 'https://api.wechat.com';
     private static $_URL_FILE_API_ROOT = 'http://file.api.weixin.qq.com';
+    private static $_QRCODE_TICKET_DEFAULT_ID = 1;
     public static $ERRCODE_MAP = array(
         ## http://admin.wechat.com/wiki/index.php?title=Return_Codes
       '-1' => 'System busy', '0' => 'Request succeeded', '40001' => 'Verification failed', '40002' => 'Invalid certificate type', '40003' => 'Invalid Open ID', '40004' => 'Invalid media file type', '40005' => 'Invalid file type', '40006' => 'Invalid file size', '40007' => 'Invalid media file ID', '40008' => 'Invalid message type', '40009' => 'Invalid image file size', '40010' => 'Invalid audio file size', '40011' => 'Invalid video file size', '40012' => 'Invalid thumbnail file size', '40013' => 'Invalid App ID', '40014' => 'Invalid access token', '40015' => 'Invalid menu type', '40016' => 'Invalid button quantity', '40017' => 'Invalid button quantity', '40018' => 'Invalid button name length', '40019' => 'Invalid button KEY length', '40020' => 'Invalid button URL length', '40021' => 'Invalid menu version', '40022' => 'Invalid sub-menu levels', '40023' => 'Invalid sub-menu button quantity', '40024' => 'Invalid sub-menu button type',    '40025' => 'Invalid sub-menu button name length',    '40026' => 'Invalid sub-menu button KEY length',    '40027' => 'Invalid sub-menu button URL length',    '40028' => 'Invalid custom menu user',    '40029' => 'Invalid oauth code',    '40030' => 'Invalid refresh token',    '40031' => 'Invalid openid list',    '40032' => 'Invalid openid list length',    '40033' => 'Invalid request characters: The character "\uxxxx" cannot be included.',    '40035' => 'Invalid parameters',    '40038' => 'Invalid request format',    '40039' => 'Invalid URL length',    '40050' => 'Invalid group ID',    '40051' => 'Invalid group name',    '41001' => 'Parameter missing: access token',    '41002' => 'Parameter missing: appid',    '41003' => 'Parameter missing: refresh token',    '41004' => 'Parameter missing: secret',    '41005' => 'Multimedia file data missing',    '41006' => 'Parameter missing: media id',    '41007' => 'Sub-menu data missing',    '41008' => 'Parameter missing: oauth code',    '41009' => 'Parameter missing: openid',    '42001' => 'access token timed out',    '42002' => 'refresh token timed out',    '42003' => 'oauth code timed out',    '43001' => 'GET request required',    '43002' => 'POST request required',    '43003' => 'HTTPS request required',    '43004' => 'The other user is not yet a follower',    '43005' => 'The other user is not yet a follower',    '44001' => 'Multimedia file is empty',    '44002' => 'POST package is empty',    '44003' => 'Rich media message is empty',    '44004' => 'Text message is empty',    '45001' => 'Error source: multimedia file size',    '45002' => 'Message contents too long',    '45003' => 'Title too long',    '45004' => 'Description too long',    '45005' => 'URL too long',    '45006' => 'Image URL too long',    '45007' => 'Audio play time over limit',    '45008' => 'Rich media messages over limit',    '45009' => 'Error source: interface call',    '45010' => 'Message quantity over limit',    '45015' => 'Response too late',    '45016' => 'System group cannot be changed.',   
@@ -27,12 +28,12 @@ class WeChatClient{
     }
 
     public static function checkIsSuc( $res ){
-        $result = 1;
+        $result = true;
         if( is_string( $res ) ){
             $res = json_decode( $res, true );
         }
         if( isset($res['errcode']) && ( 0 !== (int)$res['errcode']) ){
-            $result = 0;
+            $result = false;
         }
         return $result; 
     }
@@ -117,8 +118,9 @@ class WeChatClient{
         }
         return $tokenOnly ? $myToeknInfo['token'] : $myToeknInfo;
     }
-    public function setAccessToken( $appid, $tokenInfo ){
+    public function setAccessToken( $tokenInfo ){
         if( $tokenInfo ){
+            $appid       = $this->_appid;
             self::$_accessTokenCache[ $appid ] = array(
                 'token'  => $tokenInfo['token'],
                 'expire' => $tokenInfo['expire']
@@ -127,15 +129,17 @@ class WeChatClient{
     }
 
     // *************** media file upload/download ************
-    public function upload( $type, $file_path ){
+    public function upload( $type, $file_path, $mediaidOnly = 1 ){
         $access_token = $this->getAccessToken();
         $url = self::$_URL_FILE_API_ROOT . "/cgi-bin/media/upload?access_token=$access_token&type=$type";
 
         $res = self::post( $url, array( 'media' => "@$file_path" ) );
         $res = json_decode( $res, true );
 
-        return self::checkIsSuc( $res ) ? $res['media_id'] : null;
-
+        if( self::checkIsSuc( $res ) ){
+            return $mediaidOnly ? $res['media_id'] : $res;
+        }
+        return null;
     }
     public function download( $mid ){
         $access_token = $this->getAccessToken();
@@ -161,9 +165,8 @@ class WeChatClient{
         $access_token = $this->getAccessToken();
         $url = self::$_URL_API_ROOT . "/cgi-bin/menu/delete?access_token=$access_token";
 
-        return self::checkIsSuc(
-            json_decode( self::get($url), true ) 
-        );
+        $res = self::get($url);
+        return self::checkIsSuc( $res );
     }
     public function setMenu( $myMenu ){
         $access_token = $this->getAccessToken();
@@ -278,7 +281,7 @@ class WeChatClient{
     }
     public function moveUserById( $uid, $gid ){
         $access_token = $this->getAccessToken();
-        $url = self::$_URL_API_ROOT . "/cgi-bin/members/update?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/groups/members/update?access_token=$access_token";
         
         $res = self::post(
             $url, 
@@ -291,7 +294,7 @@ class WeChatClient{
         );
 
         $res = json_decode( $res, true );
-        return self::checkIsSuc( $res ) ? $res['id'] : null;
+        return self::checkIsSuc( $res );
     }
 
     public function getAllGroups(){
@@ -302,7 +305,7 @@ class WeChatClient{
         echo $res;
         $res = json_decode( $res, true ); 
         
-        return self::checkIsSuc( $res ) ? $res : null;
+        return self::checkIsSuc( $res ) ? $res['groups'] : null;
     }
 
     public function getGroupidByUserid( $uid ){
@@ -352,10 +355,48 @@ class WeChatClient{
     }
 
     // ************************** qr code *****************
-    public function getQrcodeImgByTicket( $ticket ){
-        $ticket = urlencode( $ticket );
-        return self::get( self::$_URL_API_ROOT . "/cgi-bin/showqrcode?ticket=$ticket" );
+    public static function getQrcodeImgByTicket( $ticket ){
+        return self::get( $this->getQrcodeImgUrlByTicket( $ticket ) );
     }
-    private function getQrcodeTicket(){
+    public static function getQrcodeImgUrlByTicket( $ticket ){
+        $ticket = urlencode( $ticket );
+        return self::$_URL_API_ROOT . "/cgi-bin/showqrcode?ticket=$ticket";
+    }
+    public function getQrcodeTicket( $options = array() ){
+        $access_token = $this->getAccessToken();
+
+        $scene_id   = isset( $options[ 'scene_id' ] )   ? (int)$options[ 'scene_id' ] : 0;
+        $expire     = isset( $options[ 'expire' ] )     ? (int)$options[ 'expire' ]   : 0;
+        $ticketOnly = isset( $options[ 'ticketOnly' ] ) ? $options[ 'ticketOnly' ]    : 1;
+
+        if( $scene_id < 1 || $scene_id > 100000 ){
+            $scene_id = self::$_QRCODE_TICKET_DEFAULT_ID;
+        }
+
+        $url = "$_URL_API_ROOT/cgi-bin/qrcode/create?access_token=$access_token";
+        $data = array(
+            'action_name' => 'QR_LIMIT_SCENE',
+            'action_info' => array(
+                'scene' => array( 
+                    'scene_id' => $scene_id
+                )
+            )
+        );
+        if( $expire ){
+            $data['expire_seconds'] = $expire;
+            $data['action_name']    = 'QR_SCENE';
+        }
+        $data = json_encode( $data );
+
+        $res = self::post( $url, $data );
+        $res = json_decode( $res, true );
+
+        if( self::checkIsSuc( $res ) ){
+            return $ticketOnly ? $res['ticket'] : array(
+                'ticket' => $res['ticket'],
+                'expire' => $res['expire_seconds']
+            );
+        }
+        return null;
     }
 }
