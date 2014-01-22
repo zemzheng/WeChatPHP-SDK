@@ -1,6 +1,7 @@
 WeChatPHP-SDK
 =============
 [github](https://github.com/zemzheng/WeChatPHP-SDK)
+[blog](http://hello.ziey.info/wechat-php-sdk/)
 
 SDK to admin.wechat.com for php
 
