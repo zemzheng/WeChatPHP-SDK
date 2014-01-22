@@ -324,3 +324,4 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 
     WeChatClient::getQrcodeImgUrlByTicket( $ticket )
     # @return Image Binary
+</pre>
