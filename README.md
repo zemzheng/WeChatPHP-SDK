@@ -170,29 +170,28 @@ In hook you can send response by use
         [, ... ]
     );
 #### DEMO CODE
-<pre>
-&lt;?PHP  
-include('WeChatServer.php');
-function responseTxt( $postObj ){
-    $content = $postObj['content'];
-    echo WeChatServer::getXml4Txt( "You say : [$content]." );
-}
+<pre>&lt;?PHP
+    include('WeChatServer.php');
+    function responseTxt( $postObj ){
+        $content = $postObj['content'];
+        echo WeChatServer::getXml4Txt( "You say : [$content]." );
+    }
 
-$svr = new WeChatServer( 
-  'token_in_admin.wechat.com', 
-  array(
-    'receiveAllStart'  => function( $postObj ){ 
-        log( $postObj['from'] );
-        // log who sent this msg
-        // if u want to send response here,
-        //      please exit
-        // echo WeChatServer::getXml4Txt( 'Hey' );
-        // exit();
-    },
-    'receiveMsg::text' => 'responseTxt'
-    
-  )
-);
+    $svr = new WeChatServer( 
+      'token_in_admin.wechat.com', 
+      array(
+        'receiveAllStart'  => function( $postObj ){ 
+            log( $postObj['from'] );
+            // log who sent this msg
+            // if u want to send response here,
+            //      please exit
+            // echo WeChatServer::getXml4Txt( 'Hey' );
+            // exit();
+        },
+        'receiveMsg::text' => 'responseTxt'
+        
+      )
+    );
 
 </pre>
 ###WeChatClient.php
