@@ -58,11 +58,7 @@ class WeChatServer{
         $tmpStr = implode( $tmpArr );
         $tmpStr = sha1( $tmpStr );
 
-        if( $tmpStr == $signature ){
-            return true;
-        }else{
-            return false;
-        }
+        return $tmpStr == $signature;
     }
 
     private function _handlePostObj( $postObj ){
