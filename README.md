@@ -16,6 +16,7 @@ Hook mark the position in process and you can handle data/process there.
 ###### Wiki
 * <a href="http://admin.wechat.com/wiki/index.php?title=Common_Messages" target="_blank">Common Messages</a>
 * <a href="http://admin.wechat.com/wiki/index.php?title=Event_Messages" target="_blank">Event Messages</a>
+
 ###### Hook List
     # ============================================================
     # Hook  Name                || Handle Function
