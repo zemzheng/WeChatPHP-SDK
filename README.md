@@ -1,18 +1,22 @@
 WeChatPHP-SDK
 =============
-[github](https://github.com/zemzheng/WeChatPHP-SDK)
-[blog](http://hello.ziey.info/wechat-php-sdk/)
+* <a href="https://github.com/zemzheng/WeChatPHP-SDK" target="_blank">github</a>
+* <a href="http://hello.ziey.info/wechat-php-sdk/" target="_blank">blog</a>
 
 SDK to admin.wechat.com for php
 
 ###WeChatServer.php
 
-#### Useage
+##### About
 WeChatServer is used to start an api for admin.wechat.com to connect.
+
 ##### Getting start with Hook
 Hook mark the position in process and you can handle data/process there.
-<pre>&lt;?PHP $svr = new WeChatServer( 'token', 
-    array( /* HOOKs list */ 
+
+###### Wiki
+* <a href="http://admin.wechat.com/wiki/index.php?title=Common_Messages" target="_blank">Common Messages</a>
+* <a href="http://admin.wechat.com/wiki/index.php?title=Event_Messages" target="_blank">Event Messages</a>
+###### Hook List
     # ============================================================
     # Hook  Name                || Handle Function
     # ============================================================
@@ -24,22 +28,40 @@ Hook mark the position in process and you can handle data/process there.
     # receiveMsg::location      => ||
     # receiveMsg::image         => ||
     # receiveMsg::video         => ||
-    # receiveMsg::link          => ||
+    # receiveMsg::link          => /\
     # receiveMsg::voice         => ||
     # receiveEvent::subscribe   => ||
     # receiveEvent::unsubscribe => ||
     # receiveEvent::scan        => ||
-    # receiveEvent::location    => ||
+    # receiveEvent::location    => /\
     # receiveEvent::click       => ||
     # receiveAllEnd             => ||
     # accessCheckSuccess        => ||
-    # 404                       => --
+    # 404                       => /\
     # ============================================================
-    ) 
-);
+
+##### How to use hook?
+<pre>&lt;?PHP 
+  include('WeChatServer.php');
+  function handle( $postData ){
+    // your code here...
+  }
+  $svr = new WeChatServer( 
+    'your-token', 
+    array( /* Hook here */
+        'HookName' => 'Handle Function Name OR Function'
+        /* demo */
+        'receiveMsg::text'     => 'handle',
+        'receiveMsg::location' => handle,
+        'receiveMsg::image'    => function( $postData ){ /* your code here */ }
+      ) 
+  );
 </pre>
-* receiveAllStart
-<pre>$postData = array( 
+
+##### Hooks detail:
+* receiveAllStart [1st Hook before all]
+<pre>
+  $postData = array( 
     # Base Keys:
     'id'   => /* message id          */ ,
     'from' => /* follower open id    */ ,
@@ -48,10 +70,16 @@ Hook mark the position in process and you can handle data/process there.
     'type' => /* message type        */
   ) + receiveMsg OR receiveEvent
 </pre>
-* receiveMsg::text
-<pre>$postData = array( /* ... base ... */ 'content' => )
+
+* receiveMsg::text [type = text]
+<pre>
+  $postData = array( 
+    /* ... base ... */ 
+    'content' => /* text content */
+  )
 </pre>
-* receiveMsg::location
+
+* receiveMsg::location [type = location] 
 <pre>$postData = array( 
     /* ... base ... */
     'X' => /* latitude   */ ,
@@ -60,21 +88,24 @@ Hook mark the position in process and you can handle data/process there.
     'I' => /* label info */
   )
 </pre>
-* receiveMsg::image
+
+* receiveMsg::image [type = image]
 <pre>$postData = array(
     /* ... base ... */
     'url' => /* image url                                      */ ,
     'mid' => /* image media id (can download or sent to other) */
   )
 </pre>
-* receiveMsg::video
+
+* receiveMsg::video [type = video]
 <pre>$postData = array(
     /* ... base ... */
     'mid       => /* video media id       */ ,
     'thumbmid' => /* thumb image media id */
   )
 </pre>
-* receiveMsg::link
+
+* receiveMsg::link [type = link]
 <pre>$postData = array(
     /* ... base ... */
     'title' => /* title       */ ,
@@ -82,7 +113,7 @@ Hook mark the position in process and you can handle data/process there.
     'url'   => /* link url    */
   )
 </pre>
-* receiveMsg::voice
+* receiveMsg::voice [type = voice]
 <pre>$postData = array(
     /* ... base ... */
     'mid'     => /* voice media id                        */ ,
@@ -90,7 +121,7 @@ Hook mark the position in process and you can handle data/process there.
     [ , 'txt' => /* voice recognition result              */ ]
   )
 </pre>
-* receiveEvent::subscribe
+* receiveEvent::subscribe [type = event & event = subscribe]
 <pre>$postData = array(
     /* ... base ... */
     'event'      => /* event name          */ ,
@@ -99,13 +130,13 @@ Hook mark the position in process and you can handle data/process there.
     ]
   )
 </pre>
-* receiveEvent::unsubscribe
+* receiveEvent::unsubscribe [type = event & event = unsubscribe]
 <pre>$postData = array(
     /* ... base ... */
     'event'      => /* event name */
   )
 </pre>
-* receiveEvent::scan
+* receiveEvent::scan [type = event & event = scan]
 <pre>$postData = array(
     /* ... base ... */
     'event'      => /* event name          */ ,
@@ -114,7 +145,7 @@ Hook mark the position in process and you can handle data/process there.
     ]
   )
 </pre>
-* receiveEvent::location
+* receiveEvent::location [type = event & event = location]
 <pre>$postData = array(
     /* ... base ... */
     'event' => /* event name */ ,
@@ -123,14 +154,14 @@ Hook mark the position in process and you can handle data/process there.
     'p'     => /* Precision  */
 )
 </pre>
-* receiveEvent::click
+* receiveEvent::click [type = event & event = click]
 <pre>$postData = array(
     /* ... base ...*/
     'event' => /* event name */ ,
     'key'   => /* custom key */
 )
 </pre>
-* receiveAllEnd
+* receiveAllEnd [Last Hook]
 <pre>$postData = array(
     'id'   => /* message id          */ ,
     'from' => /* follower open id    */ ,
@@ -139,36 +170,58 @@ Hook mark the position in process and you can handle data/process there.
     'type' => /* message type        */
 ) + receiveMsg OR receiveEvent
 </pre>
-* accessCheckSuccess
-* 404
+* accessCheckSuccess (without params)
+* 404 (without params)
 
-#####get xml
+#####get xml 
 In hook you can send response by use 
-<pre> &lt;?PHP echo WeChatServer::getXml4* # ...  
-</pre>
-* WeChatServer::getXml4Txt( $text );
-* WeChatServer::getXml4ImgByMid( $mediaid );
-* WeChatServer::getXml4VoiceByMid( $mediaid );
-* WeChatServer::getXml4VideoByMid( 
-    $mediaid, $title 
-    [, $description=$title as Default ] 
-  );
-* WeChatServer::getXml4MusicByUrl( 
-    $music_url, $mediaid_thumb, $title 
-    [, $description             = $title as Default
-     , $high_quailty_music_url  = $music_url as Default
-    ] 
-  );
-* WeChatServer::getXml4RichMsgByArray(
-    array(
-        array(
-            'title' => # title
-            'desc'  => # description
-            'pic'   => # picture url
-            'url'   => # article url
-        )
-        [, ... ]
-    );
+
+    echo WeChatServer::getXml4* # ...
+
+<a href="http://admin.wechat.com/wiki/index.php?title=Callback_Messages" target="_blank">Callback Message</a>
+  
+* Text
+
+        {String} WeChatServer::getXml4Txt( $text );
+
+* Image
+
+        {String} WeChatServer::getXml4ImgByMid( $mediaid );
+
+* Voice
+
+        {String} WeChatServer::getXml4VoiceByMid( $mediaid );
+
+* Video
+
+        {String} WeChatServer::getXml4VideoByMid( 
+                    $mediaid, $title 
+                    [, $description=$title as Default ] 
+                 );
+
+* Music
+
+        {String} WeChatServer::getXml4MusicByUrl( 
+                     $music_url, $mediaid_thumb, $title 
+                     [, $description             = $title as Default
+                      , $high_quailty_music_url  = $music_url as Default
+                     ] 
+                 );
+
+* Rich Message
+
+        {String} WeChatServer::getXml4RichMsgByArray(
+                    array(
+                        array(
+                            'title' => # title
+                            'desc'  => # description
+                            'pic'   => # picture url
+                            'url'   => # article url
+                        )
+                        [, ... ]
+                    )
+                 );
+
 #### DEMO CODE
 <pre>&lt;?PHP
     include('WeChatServer.php');
@@ -189,20 +242,22 @@ In hook you can send response by use
             // exit();
         },
         'receiveMsg::text' => 'responseTxt'
-        
       )
     );
 
 </pre>
+
+
 ###WeChatClient.php
 
-#### Useage
+#### About
 WeChatClient is used to set/get user-defined menu in chat, manage followers group, upload/download media file and send customer server messages.
 
 #### getting start
 <pre>&lt;?PHP $client = new WeChatClient( 'your-appid', 'your-appsecret' );
 </pre>
-#### Access Token
+#### Access Token 
+* <a href="http://admin.wechat.com/wiki/index.php?title=Access_token" target="_blank">wiki</a>
 <pre>&lt;?PHP
     # If you need access token, you can use following:
     $client->getAccessToken(); 
@@ -210,10 +265,10 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
     # If you need access token with expire time, use:
     $tokenOnly = 0;
     $client->getAccessToken( $tokenOnly ); 
-    # array(
-    #     'token'  => /* access token */,
-    #     'expire' => /* timestamp */
-    # )
+    # @return array(
+    #             'token'  => /* access token */,
+    #             'expire' => /* timestamp */
+    #         )
 
     # access token info will be cached
     #   once $client->getAccessToken is called
@@ -223,6 +278,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 </pre>
 
 #### User-defined Menu
+<a href="http://admin.wechat.com/wiki/index.php?title=Create" target="_blank">Menu Create Wiki</a>
 <pre>&lt;?PHP
     # Get Menu Array or null for empty;
     $client->getMenu();
@@ -240,6 +296,8 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 </pre>
 
 #### Manage Followers & Group 
+* <a href="http://admin.wechat.com/wiki/index.php?title=Group_Management_API" target="_blank">Group Management API</a>
+* <a href="http://admin.wechat.com/wiki/index.php?title=User_Profile" target="_blank">User profile</a>
 <pre>&lt;?PHP
 
     $client->getUserInfoById( $userid [, $lang='en' ] );
@@ -272,6 +330,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 </pre>
 
 #### Media File
+* <a href="http://admin.wechat.com/wiki/index.php?title=Transferring_Multimedia_Files" target="_blank">wiki</a>
 <pre>&lt;?PHP
     $client->upload( $type, $file_path [, $mediaidOnly = true ] );
     # @param $type {string} image | voice | video | thumb
@@ -284,6 +343,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 </pre>
 
 #### Customer Server Message
+* <a href="http://admin.wechat.com/wiki/index.php?title=Customer_Service_Messages" target="_blank">wiki</a>
 <pre>&lt;?PHP
     # all the following will return {boolen}
     $client->sendTextMsg( $user_id, $txt );
@@ -308,6 +368,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
     );
 </pre>
 #### Qrcode
+* <a href="http://admin.wechat.com/wiki/index.php?title=Generating_Parametric_QR_Code" target="_blank">wiki</a>
 <pre>&lt;?PHP
     $client->getQrcodeTicket( [ $options ] );
     # @param $options {Array}
@@ -318,7 +379,10 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
     #       )
     # @return {string|null} when ticketOnly = true, return ticket string
     # @return {array|null}  when ticketOnly = false, 
-    #       return array( 'ticket' => /* ... */,  'expire' => /* ... */ )
+    #       return array( 
+    #                   'ticket' => /* ... */,  
+    #                   'expire' => /* ... */ 
+    #              )
 
     WeChatClient::getQrcodeImgUrlByTicket( $ticket )
     # @return {string} 
