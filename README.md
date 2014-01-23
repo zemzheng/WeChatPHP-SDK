@@ -11,7 +11,7 @@ SDK to admin.wechat.com for php
 WeChatServer is used to start an api for admin.wechat.com to connect.
 ##### Getting start with Hook
 Hook mark the position in process and you can handle data/process there.
-<pre>&lt;PHP $svr = new WeChatServer( 'token', 
+<pre>&lt;?PHP $svr = new WeChatServer( 'token', 
     array( /* HOOKs list */ 
     # ============================================================
     # Hook  Name                || Handle Function
@@ -141,7 +141,8 @@ Hook mark the position in process and you can handle data/process there.
 </pre>
 * accessCheckSuccess
 * 404
-##### get xml
+
+#####get xml
 In hook you can send response by use 
 <pre> &lt;?PHP echo WeChatServer::getXml4* # ...  
 </pre>
@@ -200,10 +201,10 @@ $svr = new WeChatServer(
 WeChatClient is used to set/get user-defined menu in chat, manage followers group, upload/download media file and send customer server messages.
 
 #### getting start
-<pre>&lt;PHP $client = new WeChatClient( 'your-appid', 'your-appsecret' );
+<pre>&lt;?PHP $client = new WeChatClient( 'your-appid', 'your-appsecret' );
 </pre>
 #### Access Token
-<pre>&lt;PHP
+<pre>&lt;?PHP
     # If you need access token, you can use following:
     $client->getAccessToken(); 
 
@@ -223,7 +224,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 </pre>
 
 #### User-defined Menu
-<pre>&lt;PHP
+<pre>&lt;?PHP
     # Get Menu Array or null for empty;
     $client->getMenu();
 
@@ -240,7 +241,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 </pre>
 
 #### Manage Followers & Group 
-<pre>&lt;PHP
+<pre>&lt;?PHP
 
     $client->getUserInfoById( $userid [, $lang='en' ] );
     # @return {Array} For detail 
@@ -272,7 +273,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 </pre>
 
 #### Media File
-<pre>&lt;PHP
+<pre>&lt;?PHP
     $client->upload( $type, $file_path [, $mediaidOnly = true ] );
     # @param $type {string} image | voice | video | thumb
     # @return {string} When $mediaidOnly = true, return media id
@@ -284,7 +285,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 </pre>
 
 #### Customer Server Message
-<pre>&lt;PHP
+<pre>&lt;?PHP
     # all the following will return {boolen}
     $client->sendTextMsg( $user_id, $txt );
     $client->sendImgMsg( $user_id, $media_id );
@@ -308,7 +309,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
     );
 </pre>
 #### Qrcode
-<pre>&lt;PHP
+<pre>&lt;?PHP
     $client->getQrcodeTicket( [ $options ] );
     # @param $options {Array}
     #       array(
