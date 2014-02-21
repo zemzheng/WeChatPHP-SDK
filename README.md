@@ -1,9 +1,18 @@
 WeChatPHP-SDK
 =============
-* <a href="https://github.com/zemzheng/WeChatPHP-SDK" target="_blank">github</a>
-* <a href="http://hello.ziey.info/wechat-php-sdk/" target="_blank">blog</a>
 
+![WeChatPHP-SDK](https://raw.github.com/zemzheng/WeChatPHP-SDK/master/banner.png)
 SDK to admin.wechat.com for php
+
+#### Logs
+* 2014-02-18 add bnner & zh_CN setting for WeChatClient
+* 2014-01-23 Upload
+
+#### links
+* <a href="https://github.com/zemzheng/WeChatPHP-SDK" target="_blank">WeChatPHP-SDK@github</a>
+* <a href="http://admin.wechat.com/wiki" target="_blank">WeChat OA Developer Wiki</a>
+* <a href="http://mp.weixin.qqt.com/wiki" target="_blank">微信公众平台开发者文档</a>
+* <a href="http://hello.ziey.info/wechat-php-sdk/" target="_blank">Zem's Blog</a>
 
 ###WeChatServer.php
 
@@ -255,7 +264,11 @@ In hook you can send response by use
 WeChatClient is used to set/get user-defined menu in chat, manage followers group, upload/download media file and send customer server messages.
 
 #### getting start
-<pre>&lt;?PHP $client = new WeChatClient( 'your-appid', 'your-appsecret' );
+<pre>&lt;?PHP
+    include( 'WeChatClient.php' );
+    # If you are the user of mp.weixin.qq.com, please include WeChatClient.zh_CN.php
+    # include( 'WeChatClient.zh_CN.php' ); 
+    $client = new WeChatClient( 'your-appid', 'your-appsecret' );
 </pre>
 #### Access Token 
 * <a href="http://admin.wechat.com/wiki/index.php?title=Access_token" target="_blank">wiki</a>
@@ -368,6 +381,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
         ) 
     );
 </pre>
+
 #### Qrcode
 * <a href="http://admin.wechat.com/wiki/index.php?title=Generating_Parametric_QR_Code" target="_blank">wiki</a>
 <pre>&lt;?PHP
@@ -388,6 +402,6 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
     WeChatClient::getQrcodeImgUrlByTicket( $ticket )
     # @return {string} 
 
-    WeChatClient::getQrcodeImgUrlByTicket( $ticket )
+    WeChatClient::getQrcodeImgByTicket( $ticket )
     # @return Image Binary
 </pre>
