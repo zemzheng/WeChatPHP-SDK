@@ -11,7 +11,7 @@ SDK to admin.wechat.com for php
 #### links
 * <a href="https://github.com/zemzheng/WeChatPHP-SDK" target="_blank">WeChatPHP-SDK@github</a>
 * <a href="http://admin.wechat.com/wiki" target="_blank">WeChat OA Developer Wiki</a>
-* <a href="http://mp.weixin.qqt.com/wiki" target="_blank">微信公众平台开发者文档</a>
+* <a href="http://mp.weixin.qq.com/wiki" target="_blank">微信公众平台开发者文档</a>
 * <a href="http://hello.ziey.info/wechat-php-sdk/" target="_blank">Zem's Blog</a>
 
 ###WeChatServer.php
