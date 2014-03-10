@@ -47,14 +47,13 @@ class WeChatServer{
         );
     }
     private function _checkSignature(){
-        return true;
         $signature = $_GET["signature"];
         $timestamp = $_GET["timestamp"];
         $nonce = $_GET["nonce"];	
 
         $token = $this->_token;
         $tmpArr = array($token, $timestamp, $nonce);
-        sort($tmpArr);
+        sort( $tmpArr, SORT_STRING );
         $tmpStr = implode( $tmpArr );
         $tmpStr = sha1( $tmpStr );
 
