@@ -2,9 +2,11 @@ WeChatPHP-SDK
 =============
 
 ![WeChatPHP-SDK](https://raw.github.com/zemzheng/WeChatPHP-SDK/master/banner.png)
+
 SDK to admin.wechat.com for php
 
 #### Logs
+* 2014-03-27 Fix WeChatServer Response media
 * 2014-02-18 add bnner & zh_CN setting for WeChatClient
 * 2014-01-23 Upload
 

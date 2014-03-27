@@ -215,8 +215,10 @@ class WeChatServer{
                 .     '<MediaId><![CDATA[%s]]></MediaId>'
                 . '</Image>';
         return self::_format2xml(
-            $xml,
-            $mid
+            sprintf(
+                $xml,
+                $mid
+            )
         );
     }
     public static function getXml4VoiceByMid( $mid ){
@@ -225,8 +227,10 @@ class WeChatServer{
                 .     '<MediaId><![CDATA[%s]]></MediaId>'
                 . '</Voice>';
         return self::_format2xml(
-            $xml,
-            $mid
+            sprintf(
+                $xml,
+                $mid
+            )
         );
     }
     public static function getXml4VideoByMid( $mid, $title, $desc = '' ){
@@ -239,10 +243,12 @@ class WeChatServer{
                 . '</Video>';
 
         return self::_format2xml(
-            $xml,
-            $mid,
-            $title,
-            $desc
+            sprintf(
+                $xml,
+                $mid,
+                $title,
+                $desc
+            )
         );
     }
     public static function getXml4MusicByUrl( $url, $thumbmid, $title, $desc = '', $hqurl = '' ){
@@ -256,12 +262,14 @@ class WeChatServer{
                 . '</Music>';
 
         return self::_format2xml(
-            $xml,
-            $title,
-            '' === $desc ? $title : $desc,
-            $url,
-            $hqurl ? $hqurl : $url,
-            $thumbmid
+            sprintf(
+                $xml,
+                $title,
+                '' === $desc ? $title : $desc,
+                $url,
+                $hqurl ? $hqurl : $url,
+                $thumbmid
+            )
         );
     }
 
@@ -291,7 +299,13 @@ class WeChatServer{
                . '<ArticleCount>%s</ArticleCount>'
                . '<Articles>%s</Articles>';
 
-        return self::_format2xml( $xml, $i, $list_xml );
+        return self::_format2xml(
+            sprintf(
+                $xml,
+                $i,
+                $list_xml 
+            )
+        );
             
     }
 }
