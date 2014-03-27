@@ -102,7 +102,7 @@ class WeChatServer{
                 break;
 
             case 'voice':
-                $result['mid']    = (string) $postObj->MediaID;     // 语音消息媒体id，可以调用多媒体文件下载接口拉取该媒体
+                $result['mid']    = (string) $postObj->MediaId;     // 语音消息媒体id，可以调用多媒体文件下载接口拉取该媒体
                 $result['format'] = (string) $postObj->Format;      // 语音格式：amr
                 if( property_exists( $postObj, Recognition ) ){
                     $result['txt']    = (string) $postObj->Recognition; // 语音识别结果，UTF8编码
