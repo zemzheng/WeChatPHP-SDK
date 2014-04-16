@@ -173,11 +173,7 @@ class WeChatClient{
         $access_token = $this->getAccessToken();
         $url = self::$_URL_API_ROOT . "/cgi-bin/menu/create?access_token=$access_token";
 
-        if( defined( 'JSON_UNESCAPED_UNICODE' ) ){
-            $json = is_string( $myMenu ) ? $myMenu : json_encode( $myMenu, JSON_UNESCAPED_UNICODE );
-        } else{
-            $json = is_string( $myMenu ) ? $myMenu : json_encode( $myMenu );
-        }
+        $json = is_string( $myMenu ) ? $myMenu : self::__json_encode( $myMenu );
 
         $res = self::post($url, $json);
 
@@ -189,7 +185,7 @@ class WeChatClient{
         $access_token = $this->getAccessToken();
         $url = self::$_URL_API_ROOT . "/cgi-bin/message/custom/send?access_token=$access_token";
 
-        $json = json_encode(
+        $json = self::__json_encode(
             array(
                 'touser'  => $to,
                 'msgtype' => $type,
@@ -259,7 +255,7 @@ class WeChatClient{
         $access_token = $this->getAccessToken();
         $url = self::$_URL_API_ROOT . "/cgi-bin/groups/create?access_token=$access_token";
 
-        $res = self::post( $url, json_encode( array(
+        $res = self::post( $url, self::__json_encode( array(
             'group' => array( 'name' => $name )
         ) ) );
 
@@ -270,7 +266,7 @@ class WeChatClient{
         $access_token = $this->getAccessToken();
         $url = self::$_URL_API_ROOT . "/cgi-bin/groups/update?access_token=$access_token";
 
-        $res = self::post( $url, json_encode( array(
+        $res = self::post( $url, self::__json_encode( array(
             'group' => array(
                 'id'   => $gid,
                 'name' => $name
@@ -386,7 +382,7 @@ class WeChatClient{
             $data['expire_seconds'] = $expire;
             $data['action_name']    = 'QR_SCENE';
         }
-        $data = json_encode( $data );
+        $data = self::__json_encode( $data );
 
         $res = self::post( $url, $data );
         $res = json_decode( $res, true );
@@ -398,6 +394,15 @@ class WeChatClient{
             );
         }
         return null;
+    }
+    
+    //*************** json_encode unicode escape fix *****************
+    private static function __json_encode( $obj ) {
+        if( defined( 'JSON_UNESCAPED_UNICODE' ) ){ // >= php 5.4
+            return json_encode( $obj, JSON_UNESCAPED_UNICODE );
+        } else {
+            return preg_replace( "/\\\\u([a-f0-9]{4})/e", "iconv('UCS-4LE','UTF-8',pack('V', hexdec('U$1')))", json_encode( $obj ) );
+        }
     }
 }
 
