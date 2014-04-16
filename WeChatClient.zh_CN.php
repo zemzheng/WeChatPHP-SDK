@@ -11,6 +11,7 @@ WeChatClient::$_USERINFO_LANG     = 'zh_CN';
 WeChatClient::$ERRCODE_MAP = array(
         '-1' => '系统繁忙', 
         '0' => '请求成功', 
+
         '40001' => '获取access_token时AppSecret错误，或者access_token无效', 
         '40002' => '不合法的凭证类型', 
         '40003' => '不合法的OpenID', 

@@ -22,12 +22,14 @@ class WeChatServer{
      * receiveEvent::scan
      * receiveEvent::location
      * receiveEvent::click
+     * receiveEvent::masssendjobfinish
      * receiveAllEnd
      * accessCheckSuccess
      * 404
      */
     private $_hooks;
 
+    public static $ERRCODE_MAP;
 
     public function __construct( $token, $hooks  = array() ){
         $this->_token = $token;
@@ -133,6 +135,20 @@ class WeChatServer{
 
                     case 'click': // 自定义菜单事件
                         $result['key']   = (string) $postObj->EventKey; // 事件KEY值，与自定义菜单接口中KEY值对???
+                        break;
+
+                    case "masssendjobfinish": // 高级群发接口
+
+                        $result['id']     = (string) $postObj->MsgID;                   // 群发的消息ID
+                        $result['status'] = (bool) 'send success' === $postObj->Status; // 群发结果
+                        $result['msg']    = (string) self::$ERRCODE_MAP[ $postObj->Status ];
+
+                        // TotalCount >= FilterCount
+                        // FilterCount = SentCount + ErrorCount
+                        $result['total'] = (string) $postObj->TotalCount;     // group_id下粉丝数；或者openid_list中的粉丝数
+                        $result['fact']  = (string) $postObj->FilterCount;    // 实际发送的粉丝数（部分设置黑白名单）
+                        $result['hit']   = (string) $postObj->SentCount;      // 发送成功的粉丝数
+                        $result['miss']  = (string) $postObj->ErrorCount;     // 发送失败的粉丝数
                         break;
                 }
         }
@@ -309,3 +325,17 @@ class WeChatServer{
             
     }
 }
+
+WeChatServer::$ERRCODE_MAP = array(
+    'send success' => 'send success',
+    'send fail'    => 'send fail',
+    'err(10001)'   => 'err(10001)',
+    'err(20001)'   => 'err(20001)',
+    'err(20004)'   => 'err(20004)',
+    'err(20002)'   => 'err(20002)',
+    'err(20006)'   => 'err(20006)',
+    'err(20008)'   => 'err(20008)',
+    'err(20013)'   => 'err(20013)',
+    'err(22000)'   => 'err(22000)',
+    'err(21000)'   => 'err(21000)'
+);
