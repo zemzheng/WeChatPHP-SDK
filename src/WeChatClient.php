@@ -404,6 +404,51 @@ class WeChatClient{
             return preg_replace( "/\\\\u([a-f0-9]{4})/e", "iconv('UCS-4LE','UTF-8',pack('V', hexdec('U$1')))", json_encode( $obj ) );
         }
     }
+
+    // @see http://mp.weixin.qq.com/wiki/index.php?title=%E9%AB%98%E7%BA%A7%E7%BE%A4%E5%8F%91%E6%8E%A5%E5%8F%A3
+    public function uploadNewBroadcast( $articles ){
+        $access_token = $this->getAccessToken();
+        $url = self::$_URL_API_ROOT . "/cgi-bin/media/uploadnews?access_token=$access_token";
+        $json = is_string( $articles ) ? $articles : self::__json_encode( $articles );
+        $res = self::post($url, $json);
+        $result = self::checkIsSuc( $res );
+        if( $result ){
+            $result = json_decode( $res );
+        }
+        return $result;
+    }
+    private function _transformBroadcastVideo( $id, $title, $desc, $mediaidOnly = 1 ){
+        $access_token = $this->getAccessToken();
+        $url = self::$_URL_FILE_API_ROOT . "/cgi-bin/media/uploadvideo?access_token=$access_token";
+
+        $res = self::post(
+            $url,
+            self::__json_encode( array(
+                "media_id"    => $id
+                "title"       => $title,
+                "description" => $desc
+            ) );
+        );
+        $res = json_decode( $res, true );
+
+        if( self::checkIsSuc( $res ) ){
+            return $mediaidOnly ? $res['media_id'] : $res;
+        }
+        return null;
+    }
+    public function createNewBroadcast( $type, $filter,  ){
+    }
+    public function deleteBroadcast( $id ){
+        $access_token = $this->getAccessToken();
+        $url = self::$_URL_FILE_API_ROOT . "/cgi-bin/message/mass/delete?access_token=$access_token";
+        $res = self::post(
+            $url,
+            self::__json_encode( array(
+                "msgid"=> $id
+            ) )
+        );
+        return self::checkIsSuc( $res );
+    }
 }
 
 # ######################################################################
