@@ -370,7 +370,7 @@ class WeChatClient{
             $scene_id = self::$_QRCODE_TICKET_DEFAULT_ID;
         }
 
-        $url = "$_URL_API_ROOT/cgi-bin/qrcode/create?access_token=$access_token";
+        $url  = self::$_URL_API_ROOT . "/cgi-bin/qrcode/create?access_token=$access_token";
         $data = array(
             'action_name' => 'QR_LIMIT_SCENE',
             'action_info' => array(
