@@ -2,6 +2,7 @@
 # ######################################################################
 # mp.weixin.qq.com                                                     
 # ######################################################################
+WeChatClient::$_URL_PLATFORM_ROOT = 'https://mp.weixin.qq.com';     
 WeChatClient::$_URL_API_ROOT      = 'https://api.weixin.qq.com';     
 WeChatClient::$_URL_FILE_API_ROOT = 'http://file.api.weixin.qq.com'; 
 
