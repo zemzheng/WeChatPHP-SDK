@@ -9,6 +9,7 @@
 class WeChatClient{
     // SETTING 
     // Tail this file N U will see.
+    public static $_URL_PLATFORM_ROOT;
     public static $_URL_API_ROOT;
     public static $_URL_FILE_API_ROOT;
     public static $_QRCODE_TICKET_DEFAULT_ID = 1;
@@ -356,7 +357,7 @@ class WeChatClient{
     }
     public static function getQrcodeImgUrlByTicket( $ticket ){
         $ticket = urlencode( $ticket );
-        return self::$_URL_API_ROOT . "/cgi-bin/showqrcode?ticket=$ticket";
+        return self::$_URL_PLATFORM_ROOT . "/cgi-bin/showqrcode?ticket=$ticket";
     }
     public function getQrcodeTicket( $options = array() ){
         $access_token = $this->getAccessToken();
@@ -369,7 +370,7 @@ class WeChatClient{
             $scene_id = self::$_QRCODE_TICKET_DEFAULT_ID;
         }
 
-        $url = "$_URL_API_ROOT/cgi-bin/qrcode/create?access_token=$access_token";
+        $url  = self::$_URL_API_ROOT . "/cgi-bin/qrcode/create?access_token=$access_token";
         $data = array(
             'action_name' => 'QR_LIMIT_SCENE',
             'action_info' => array(
@@ -409,6 +410,7 @@ class WeChatClient{
 # ######################################################################
 # admin.wechat.com                                                     
 # ######################################################################
+WeChatClient::$_URL_PLATFORM_ROOT = 'https://admin.wechat.com';     
 WeChatClient::$_URL_API_ROOT      = 'https://api.wechat.com';          
 WeChatClient::$_URL_FILE_API_ROOT = 'http://file.api.weixin.qq.com';   
 
