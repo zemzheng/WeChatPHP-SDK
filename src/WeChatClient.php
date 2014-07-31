@@ -366,8 +366,17 @@ class WeChatClient{
         $expire     = isset( $options[ 'expire' ] )     ? (int)$options[ 'expire' ]   : 0;
         $ticketOnly = isset( $options[ 'ticketOnly' ] ) ? $options[ 'ticketOnly' ]    : 1;
 
-        if( $scene_id < 1 || $scene_id > 100000 ){
-            $scene_id = self::$_QRCODE_TICKET_DEFAULT_ID;
+        if( $expire ){
+            // 非永久二维码
+            if( 0 == $scene_id ){
+                $scene_id = time();
+            }
+        } else {
+            // 永久二维码
+            $scene_id = (int)$scene_id;
+            if( $scene_id < 1 || $scene_id > 100000 ) {
+                $scene_id = self::$_QRCODE_TICKET_DEFAULT_ID;
+            }
         }
 
         $url  = self::$_URL_API_ROOT . "/cgi-bin/qrcode/create?access_token=$access_token";
