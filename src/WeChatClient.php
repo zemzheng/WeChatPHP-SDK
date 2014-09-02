@@ -217,7 +217,6 @@ class WeChatClient{
     }
     public function sendMusic( $to, $url, $thumb_mid, $title, $desc = '', $hq_url = '' ){
         return $this->_send( $to, 'music', array(
-            'media_id'       => $mid,
             'title'          => $title,
             'description'    => $desc || $title,
             'musicurl'       => $url,
@@ -285,7 +284,7 @@ class WeChatClient{
             $url, 
             json_encode( 
                 array(
-                    'openid'     => $mid,
+                    'openid'     => $uid,
                     'to_groupid' => $gid
                 )
             )
@@ -311,7 +310,7 @@ class WeChatClient{
         $url = self::$_URL_API_ROOT . "/cgi-bin/groups/getid?access_token=$access_token";
 
         $res = self::post( $url, json_encode( array(
-            'openid' => $mid
+            'openid' => $uid
         ) ) );
 
         $res = json_decode( $res, true );
