@@ -352,7 +352,7 @@ class WeChatClient{
 
     // ************************** qr code *****************
     public static function getQrcodeImgByTicket( $ticket ){
-        return self::get( $this->getQrcodeImgUrlByTicket( $ticket ) );
+        return self::get( self::getQrcodeImgUrlByTicket( $ticket ) );
     }
     public static function getQrcodeImgUrlByTicket( $ticket ){
         $ticket = urlencode( $ticket );
