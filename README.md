@@ -3,8 +3,7 @@ WeChatPHP-SDK
 
 ![WeChatPHP-SDK](https://raw.github.com/zemzheng/WeChatPHP-SDK/master/banner.png)
 
-SDK to admin.wechat.com for php
-
+微信公众平台 PHP SDK
 
 #### TODO
 API update: <a href="http://mp.weixin.qq.com/wiki/index.php?title=%E9%AB%98%E7%BA%A7%E7%BE%A4%E5%8F%91%E6%8E%A5%E5%8F%A3#.E4.B8.8A.E4.BC.A0.E5.9B.BE.E6.96.87.E6.B6.88.E6.81.AF.E7.B4.A0.E6.9D.90" target="_blank">高级群发接口 </a>
@@ -20,7 +19,7 @@ Request:
 * 2014-02-18 add bnner & zh_CN setting for WeChatClient
 * 2014-01-23 Upload
 
-#### links
+#### 链接
 * <a href="https://github.com/zemzheng/WeChatPHP-SDK" target="_blank">WeChatPHP-SDK@github</a>
 * <a href="http://admin.wechat.com/wiki" target="_blank">WeChat OA Developer Wiki</a>
 * <a href="http://mp.weixin.qq.com/wiki" target="_blank">微信公众平台开发者文档</a>
@@ -28,21 +27,21 @@ Request:
 
 ###WeChatServer.php
 
-##### About
+##### 关于
 WeChatServer is used to start an api for admin.wechat.com to connect.
 
-##### Getting start with Hook
-Hook mark the position in process and you can handle data/process there.
+##### 从钩子(hook) 开始
+钩子搭在请求过程中，你可以选择合适的勾搭位置，获取数据/掌控过程
 
 ###### Wiki
-* <a href="http://admin.wechat.com/wiki/index.php?title=Common_Messages" target="_blank">Common Messages</a>
-* <a href="http://admin.wechat.com/wiki/index.php?title=Event_Messages" target="_blank">Event Messages</a>
+* <a href="http://mp.weixin.qq.com/wiki/index.php?title=%E6%8E%A5%E6%94%B6%E6%99%AE%E9%80%9A%E6%B6%88%E6%81%AF" target="_blank">接收普通消息</a>
+* <a href="http://mp.weixin.qq.com/wiki/index.php?title=%E6%8E%A5%E6%94%B6%E4%BA%8B%E4%BB%B6%E6%8E%A8%E9%80%81" target="_blank">接收事件推送</a>
 
 ###### Hook List
     # ============================================================
-    # Hook  Name                || Handle Function
+    # 钩子名称                     || 嵌入函数
     # ============================================================
-    # All the event name you can use.
+    # WeChatServer 模块中的钩子.
     # 
     # ============================================================
     # receiveAllStart           => function( $postObj ){ ... }
@@ -62,7 +61,7 @@ Hook mark the position in process and you can handle data/process there.
     # 404                       => /\
     # ============================================================
 
-##### How to use hook?
+##### 如何使用Hook
 <pre>&lt;?PHP 
   include('WeChatServer.php');
   function handle( $postData ){
@@ -80,14 +79,14 @@ Hook mark the position in process and you can handle data/process there.
   );
 </pre>
 
-##### Hooks detail:
-* receiveAllStart [1st Hook before all]
+##### 钩子细节
+* receiveAllStart [第一个钩子，请求刚开始的位置]
 <pre>
   $postData = array( 
     # Base Keys:
     'id'   => /* message id          */ ,
-    'from' => /* follower open id    */ ,
-    'to'   => /* admin OA account id */ ,
+    'from' => /* 听众的 open id    */ ,
+    'to'   => /* 公众帐号 account id */ ,
     'time' => /* msg timestamp       */ ,
     'type' => /* message type        */
   ) + receiveMsg OR receiveEvent
@@ -196,11 +195,10 @@ Hook mark the position in process and you can handle data/process there.
 * 404 (without params)
 
 #####get xml 
-In hook you can send response by use 
-
+在钩子中，你可以通过下面的方法来发送信息给关注人
     echo WeChatServer::getXml4* # ...
 
-<a href="http://admin.wechat.com/wiki/index.php?title=Callback_Messages" target="_blank">Callback Message</a>
+<a href="http://mp.weixin.qq.com/wiki/index.php?title=%E5%8F%91%E9%80%81%E8%A2%AB%E5%8A%A8%E5%93%8D%E5%BA%94%E6%B6%88%E6%81%AF" target="_blank">发送被动响应消息</a>
   
 * Text
 
@@ -272,10 +270,10 @@ In hook you can send response by use
 
 ###WeChatClient.php
 
-#### About
-WeChatClient is used to set/get user-defined menu in chat, manage followers group, upload/download media file and send customer server messages.
+#### 关于
+WeChatClient 用于设置自定义菜单/管理关注人分组/上传下载媒体文件/发送客服消息/发送群发消息
 
-#### getting start
+#### 如何使用
 <pre>&lt;?PHP
     include( 'WeChatClient.php' );
     # If you are the user of mp.weixin.qq.com, please include WeChatClient.zh_CN.php
@@ -285,10 +283,10 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 #### Access Token 
 * <a href="http://admin.wechat.com/wiki/index.php?title=Access_token" target="_blank">wiki</a>
 <pre>&lt;?PHP
-    # If you need access token, you can use following:
+    # 你可以通过下面的方法获取到 access_token
     $client->getAccessToken(); 
 
-    # If you need access token with expire time, use:
+    # 你还需要知道的 access_token 的失效时间，请使用下面的方式
     $tokenOnly = 0;
     $client->getAccessToken( $tokenOnly ); 
     # @return array(
@@ -296,39 +294,41 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
     #             'expire' => /* timestamp */
     #         )
 
-    # access token info will be cached
-    #   once $client->getAccessToken is called
+    # 一个PHP请求中，执行过$client->getAccessToken() 方法
+    # access_token 将会被缓存
 
+    # 当然也可以通过缓存 access_token 来实现多请求共用
+    # 下面放方法中的 $tokenInfo = $client->getAccessToken( 0 );
     $client->setAccessToken( $tokenInfo );
-    # Cached accesstoken, $tokenInfo = $client->getAccessToken( 0 );
 </pre>
 
-#### User-defined Menu
-<a href="http://admin.wechat.com/wiki/index.php?title=Create" target="_blank">Menu Create Wiki</a>
+#### 自定义菜单
+<a href="http://mp.weixin.qq.com/wiki/index.php?title=%E8%87%AA%E5%AE%9A%E4%B9%89%E8%8F%9C%E5%8D%95%E5%88%9B%E5%BB%BA%E6%8E%A5%E5%8F%A3" target="_blank">自定义菜单创建接口</a>
 <pre>&lt;?PHP
-    # Get Menu Array or null for empty;
+    # 下面的方法将返回 Array or null 
+    # Array 为自定义菜单的内容
+    # null 表示自定义菜单为空
     $client->getMenu();
 
-    # Delete Menu as you see
+    # 删除自定义菜单
     $client->deleteMenu();
 
-    #
     $client->setMenu( $menu )
-    # @param $menu {Array|String}
-    #   When use String: $menu should be Json String
+    # @param $menu {Array|String} $menu 可以为数组或者 json 字符串
     #   When use Array:  Make sure 
     #      1) Your PHP Version support json_encode JSON_UNESCAPED_UNICODE
     #   OR 2) Don't use Unicode Chars.
+    # 目前这个地方的中文 Array 转码问题已经处理，其他语言的未经过确认
 </pre>
 
-#### Manage Followers & Group 
-* <a href="http://admin.wechat.com/wiki/index.php?title=Group_Management_API" target="_blank">Group Management API</a>
-* <a href="http://admin.wechat.com/wiki/index.php?title=User_Profile" target="_blank">User profile</a>
+#### 用户管理
+
+* <a href="http://mp.weixin.qq.com/wiki/index.php?title=%E5%88%86%E7%BB%84%E7%AE%A1%E7%90%86%E6%8E%A5%E5%8F%A3" target="_blank">分组管理接口</a>
+* <a href="http://mp.weixin.qq.com/wiki/index.php?title=%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF" target="_blank">获取用户基本信息</a>
 <pre>&lt;?PHP
 
     $client->getUserInfoById( $userid [, $lang='en' ] );
-    # @return {Array} For detail 
-    #       @see http://admin.wechat.com/wiki/index.php?title=User_Profile
+    # @return {Array} 
 
     $client->getFollowersList( [ $next_id = '' ] );
     # @return {Array}   array(
@@ -336,7 +336,6 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
     #                       'list'    => array( userid1, userid2 ... )
     #                       'next_id' => {string}
     #                   )
-    # if total length > list length, you can use
     $client->getFollowersList( $next_id );
     
     $client->createGroup( $name );
@@ -355,8 +354,8 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
     # @return {int}
 </pre>
 
-#### Media File
-* <a href="http://admin.wechat.com/wiki/index.php?title=Transferring_Multimedia_Files" target="_blank">wiki</a>
+#### 多媒体文件
+* <a href="http://mp.weixin.qq.com/wiki/index.php?title=%E4%B8%8A%E4%BC%A0%E4%B8%8B%E8%BD%BD%E5%A4%9A%E5%AA%92%E4%BD%93%E6%96%87%E4%BB%B6" target="_blank">上传下载多媒体文件</a>
 <pre>&lt;?PHP
     $client->upload( $type, $file_path [, $mediaidOnly = true ] );
     # @param $type {string} image | voice | video | thumb
@@ -369,7 +368,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 </pre>
 
 #### Customer Server Message
-* <a href="http://admin.wechat.com/wiki/index.php?title=Customer_Service_Messages" target="_blank">wiki</a>
+* <a href="http://mp.weixin.qq.com/wiki/index.php?title=%E5%8F%91%E9%80%81%E5%AE%A2%E6%9C%8D%E6%B6%88%E6%81%AF" target="_blank">发送客服消息</a>
 <pre>&lt;?PHP
     # all the following will return {boolen}
     $client->sendTextMsg( $user_id, $txt );
@@ -395,7 +394,7 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
 </pre>
 
 #### Qrcode
-* <a href="http://admin.wechat.com/wiki/index.php?title=Generating_Parametric_QR_Code" target="_blank">wiki</a>
+* <a href="http://mp.weixin.qq.com/wiki/index.php?title=%E7%94%9F%E6%88%90%E5%B8%A6%E5%8F%82%E6%95%B0%E7%9A%84%E4%BA%8C%E7%BB%B4%E7%A0%81" target="_blank">生成带参数的二维码</a>
 <pre>&lt;?PHP
     $client->getQrcodeTicket( [ $options ] );
     # @param $options {Array}
@@ -417,3 +416,4 @@ WeChatClient is used to set/get user-defined menu in chat, manage followers grou
     WeChatClient::getQrcodeImgByTicket( $ticket )
     # @return Image Binary
 </pre>
+
