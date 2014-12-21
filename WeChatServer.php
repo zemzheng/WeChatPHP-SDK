@@ -6,6 +6,7 @@
  * @see http://admin.wechat.com/wiki
  * @see http://mp.weixin.qq.com/wiki
  */
+include_once dirname( __FILE__ ) . '/lib/pkcs7Encoder.php';
 class WeChatServer{
     private $_token;
     /**
@@ -31,7 +32,16 @@ class WeChatServer{
 
     public static $ERRCODE_MAP;
 
-    public function __construct( $token, $hooks  = array() ){
+    public $_debug;
+    public $_appId;
+    public $_aesKey;
+
+    public function __construct( $token, $hooks  = array(), $opts = array() ){
+
+        $this->_debug  = isset( $opts[ 'debug' ] )  ? $opts[ 'debug' ]  : false;
+        $this->_appId  = isset( $opts[ 'appId' ] )  ? $opts[ 'appId' ]  : '';
+        $this->_aesKey = isset( $opts[ 'aesKey' ] ) ? $opts[ 'aesKey' ] : '';
+
         $this->_token = $token;
         $this->_hooks = $hooks;
         $this->accessDataPush();
@@ -48,18 +58,65 @@ class WeChatServer{
             $this->_hooks[ $type ], $argvs
         );
     }
-    private function _checkSignature(){
-        $signature = $_GET["signature"];
-        $timestamp = $_GET["timestamp"];
-        $nonce = $_GET["nonce"];	
-
-        $token = $this->_token;
-        $tmpArr = array($token, $timestamp, $nonce);
+    private function _send404(){
+        if( !headers_sent() ){
+            header('HTTP/1.1 404 Not Found');
+            header('Status: 404 Not Found');
+        }
+        $this->_activeHook('404');
+    }
+    private function _getSha1FromArray(){
+        $tmpArr = func_get_args();
         sort( $tmpArr, SORT_STRING );
         $tmpStr = implode( $tmpArr );
         $tmpStr = sha1( $tmpStr );
+        return $tmpStr;
+    }
+    private function _checkMsgSignature( $postObj ){
+        $timestamp     = $_GET["timestamp"];
+        $nonce         = $_GET["nonce"];
+        $msg_signature = $_GET[ 'msg_signature' ];
 
+        $tmpStr = $sha1->_getSha1FromArray(
+            $this->token, $timeStamp, $nonce, $postObj->Encrypt
+        );
+
+        return $tmpStr == $msg_signature;
+    }
+    private function _checkSignature(){
+        $signature     = $_GET["signature"];
+        $timestamp     = $_GET["timestamp"];
+        $nonce         = $_GET["nonce"];
+
+        $tmpStr = $this->_getSha1FromArray(
+            $this->_token, $timestamp, $nonce
+        );
         return $tmpStr == $signature;
+    }
+
+    private function _preAdjustPostObj( &$postObj ){
+        if( !isset( $postObj[ 'MsgType' ] ) //  密文模式
+            || ( isset( $postObj[ 'Encrypt' ] ) && $this->_debug ) // debug 模式 + 兼容模式
+        ){
+            $prpcrypt = new Prpcrypt( $this->_aesKey );
+            $decodeObj = $prpcrypt->decrypt(
+                $postObj[ 'Encrypt' ],
+                $this->_appId
+            );
+
+            foreach( $decodeObj as $key => $item ){
+                if( $this->_debug ){
+                    if( $decodeObj[ $key ] != $item ){
+                        $result[ $key ] = array( $postObj[ $key ]. $item );
+                    }
+                }
+                $postObj[ $key ] = $item;
+            }
+        } /* else {
+            // 明文模式，不管
+        }
+         /**/
+        return count( $result ) ? $result : 0;
     }
 
     private function _handlePostObj( $postObj ){
@@ -159,22 +216,22 @@ class WeChatServer{
 
     private function accessDataPush(){
         if( !$this->_checkSignature() ){
-            if( !headers_sent() ){
-                header('HTTP/1.1 404 Not Found');
-                header('Status: 404 Not Found');
-            }
-            $this->_activeHook('404');
-            return;
+            return $this->_send404();
         }
         
         if(isset($GLOBALS["HTTP_RAW_POST_DATA"])){
-            if( !$this->_checkSignature() ) return;
-
             $postObj = simplexml_load_string(
                 $GLOBALS["HTTP_RAW_POST_DATA"],
                 'SimpleXMLElement', 
                 LIBXML_NOCDATA
             );
+
+            $this->_preAdjustPostObj( $postObj );
+
+            if( !$this->_checkMsgSignature( $postObj ) ){
+                return $this->_send404();
+            }
+
             $postObj = $this->_handlePostObj($postObj);
 
             $this->_activeHook('receiveAllStart', $postObj);
@@ -326,16 +383,17 @@ class WeChatServer{
     }
 }
 
+// @see http://mp.weixin.qq.com/wiki/index.php?title=%E9%AB%98%E7%BA%A7%E7%BE%A4%E5%8F%91%E6%8E%A5%E5%8F%A3#.E4.B8.8A.E4.BC.A0.E5.9B.BE.E6.96.87.E6.B6.88.E6.81.AF.E7.B4.A0.E6.9D.90
 WeChatServer::$ERRCODE_MAP = array(
-    'send success' => 'send success',
-    'send fail'    => 'send fail',
-    'err(10001)'   => 'err(10001)',
-    'err(20001)'   => 'err(20001)',
-    'err(20004)'   => 'err(20004)',
-    'err(20002)'   => 'err(20002)',
-    'err(20006)'   => 'err(20006)',
-    'err(20008)'   => 'err(20008)',
-    'err(20013)'   => 'err(20013)',
-    'err(22000)'   => 'err(22000)',
-    'err(21000)'   => 'err(21000)'
+    'send success' => '发送成功',
+    'send fail'    => '发送失败',
+    'err(10001)'   => '涉嫌广告',
+    'err(20001)'   => '涉嫌政治',
+    'err(20004)'   => '涉嫌社会',
+    'err(20002)'   => '涉嫌色情',
+    'err(20006)'   => '涉嫌违法犯罪',
+    'err(20008)'   => '涉嫌欺诈',
+    'err(20013)'   => '涉嫌版权',
+    'err(22000)'   => '涉嫌互推(互相宣传)',
+    'err(21000)'   => '涉嫌其他'
 );

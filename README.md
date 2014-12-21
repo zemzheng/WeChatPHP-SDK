@@ -8,10 +8,10 @@ WeChatPHP-SDK
 #### TODO
 API update: <a href="http://mp.weixin.qq.com/wiki/index.php?title=%E9%AB%98%E7%BA%A7%E7%BE%A4%E5%8F%91%E6%8E%A5%E5%8F%A3#.E4.B8.8A.E4.BC.A0.E5.9B.BE.E6.96.87.E6.B6.88.E6.81.AF.E7.B4.A0.E6.9D.90" target="_blank">高级群发接口 </a>
 Request:
- - [x] Update WeChatServer.php
- - [ ] Update WeChatClient.php
- - [ ] Update Test
- - [ ] Update Documents
+ - [x] 默认使用中文
+ - [ ] 传输消息加密
+ - [ ] 新增接口 Server 调整
+ - [ ] 新增接口 Client 调整
 
 #### Logs
 * 2014-04-16 json_encode unicode escape fix 
